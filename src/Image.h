@@ -31,5 +31,8 @@ struct Image {
    Image& encodeMessage(const char* message);
    Image& decodeMessage(char* buffer, size_t* messageLength);
 
+   Image& diffmap(Image& img);
+   Image& diffmap_scale(Image& img, uint8_t scl = 0); // if scl is not given then default it to 0 
+
  };
  

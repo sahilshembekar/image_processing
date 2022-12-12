@@ -1,6 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-
+#define BYTE_BOUND(value) value < 0 ? 0 : (value > 255 ? 255 : value)
 #include "Image.h"
 
 #include "stb_image.h"
@@ -218,4 +218,58 @@ Image& Image::decodeMessage(char* buffer, size_t* messageLength) {
 
 
   return *this;
+}
+
+Image& Image::diffmap(Image& img) {
+  // First we see how much are we gonna compare between the 2 images
+  int compare_width = fmin(w, img.w);
+  int compare_height = fmin(h, img.h);
+  int compare_channels = fmin(channels, img.channels);
+
+  for(uint32_t i=0; i<compare_height; ++i) {
+    for(uint32_t j=0; j<compare_width; ++j) {
+      for(uint32_t k=0; k<compare_channels; ++k) {
+        /* 
+        first get the pixel and then specific channel of that pixel can be accessed by doing channels+k
+        Set that to ABS of the difference between data already at the pixel and data of the same pixel in the other image
+        and then bound that value between 0 to 255 using the function BYTE_BOUND --> we make a macro
+        */
+       data[(i*w+j)*channels+k] = BYTE_BOUND(abs(data[(i*w+j)*channels+k] - img.data[(i*img.w+j)*img.channels+k]));
+      }
+    }
+  }
+  return *this;  
+}
+
+Image& Image::diffmap_scale(Image& img, u_int8_t scl) {
+  // First we see how much are we gonna compare between the 2 images
+  int compare_width = fmin(w, img.w);
+  int compare_height = fmin(h, img.h);
+  int compare_channels = fmin(channels, img.channels);
+  // Rest is same as above , but it has the option to scale up the difference using the scale factor
+  // This is for easy of viewing if the difference is really small, we can scale it up
+  uint8_t largest = 0;
+  for(uint32_t i=0; i<compare_height; ++i) {
+    for(uint32_t j=0; j<compare_width; ++j) {
+      for(uint32_t k=0; k<compare_channels; ++k) {
+        /* 
+        first get the pixel and then specific channel of that pixel can be accessed by doing channels+k
+        Set that to ABS of the difference between data already at the pixel and data of the same pixel in the other image
+        and then bound that value between 0 to 255 using the function BYTE_BOUND --> we make a macro
+        */
+       data[(i*w+j)*channels+k] = BYTE_BOUND(abs(data[(i*w+j)*channels+k] - img.data[(i*img.w+j)*img.channels+k]));
+       largest = fmax(largest, data[(i*w+j)*channels+k]);     
+      }
+    }
+  }
+  scl = 255/ fmax(1, fmax(scl, largest));
+  /* fmax between fmax and 1 ensures that -ve value or 0 never become the denominator
+  Takes a range between 0 and scl or 0 and largest and rescales to be between 0 and 255  
+  If largest is greater than 255 it brought down by scl
+  */
+  
+  for (int i=0; i<size; ++i) {
+    data[i] *= scl;
+  } 
+  return *this;  
 }

@@ -26,17 +26,39 @@ int main(int argc, char** argv) {
     // test.colorMask(0,0,1); // Since blue is 1 it will make the test Image blue
     // test.write("blue.png"); 
 
-    test.encodeMessage("Created by Sahil Shembekar");
-    test.write("secret_message.png");
+    // test.encodeMessage("Created by Sahil Shembekar");
+    // test.write("secret_message.png");
 
-    /* Initialize all elements to 0, that way whatever string we get is already null terminated 
-    and we can use printf to print it easily
-    */
-    char buffer[4103] = {0}; // char array as our buffer
-    size_t len = 0;
-    test.decodeMessage(buffer, &len);
+    // /* Initialize all elements to 0, that way whatever string we get is already null terminated 
+    // and we can use printf to print it easily
+    // */
+    // char buffer[4103] = {0}; // char array as our buffer
+    // size_t len = 0;
+    // test.decodeMessage(buffer, &len);
 
-    // printout our message after we decode it // Verification
-    printf("Message: %s (%zu)\n", buffer, len); 
+    // // printout our message after we decode it // Verification
+    // printf("Message: %s (%zu)\n", buffer, len); 
+
+    Image test1("test.png");
+    Image test2("test1.png");
+
+    test2.data[100] += 1;
+    test2.data[101] += 1;
+    test2.data[102] += 1;
+    test2.data[103] += 1;
+    test2.data[200] += 1;
+    test2.data[202] += 1;
+    test2.data[300] += 1;
+    test2.data[305] += 1;
+    test2.data[405] += 1;
+    test2.data[505] += 1;
+    
+    test2.write("other.png");
+      
+    Image diff = test;
+    diff.diffmap_scale(test2);
+
+    diff.write("diff.png");
+
     return 0;
 }
