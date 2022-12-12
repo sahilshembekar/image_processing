@@ -26,6 +26,7 @@ clean:
 	@echo "  /$(TARGET)"
 	@$(RM) -r $(BUILDDIR) $(OBJECTS)
 	@$(RM) "./$(TARGET)"
+#	rm -f !(src|Makefile|build|test.png)
 
 PHONY: r
 r:

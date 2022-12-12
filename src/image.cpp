@@ -5,9 +5,9 @@
 #include "stb_image.h"
 #include "stb_image_write.h"
 
-image::image(const char* filename)
+image::image(const char* filename) {
 // Constrcutor
-{
+
   if (read(filename)) {
     printf("Read %s\n", filename);
     size = w * h * channels;
@@ -19,19 +19,18 @@ image::image(const char* filename)
 image::image(int w, int h, int channels)
     : w(w),
       h(h),
-      channels(channels)  // Using initializer list
+      channels(channels){  // Using initializer list
 // Blank black image
-{
+
   size = w * h * channels;
   data = new uint8_t[size];
 }
 
 image::image(const image& img)
-    : image(img.w, img.h, img.channels)  // Calling the above constuctor here
+    : image(img.w, img.h, img.channels)  { // Calling the above constuctor here
 // image::image(const image& img) : w(img.w), h(img.h), channels(img.channels)
 // // Calling the above constuctor here
 // Ability to coopy images, hence copy constructor
-{
   memcpy(data, img.data, size);  // copy over the data from other image here //
                                  // can also be img.size
 }
@@ -40,17 +39,15 @@ image::~image() {
       data);  // deletes the data; basically the image gets destructed
 }
 
-bool image::read(const char* filename)
+bool image::read(const char* filename) {
 // Read in from a file // will be called by the constructor
-{
   data = stbi_load(filename, &w, &h, &channels,
                    0);  // Check explanation on line 103 of stb_image.h file
   return data != NULL;
 }
 
-bool image::write(const char* filename)
+bool image::write(const char* filename) {
 // Ability to write to some location of a file
-{
   // 5 types based on extension type //Check line 31 of stb_image_write.h
   imageType type = getFileType(filename);
   int success;  // since the xyz function returns an int value which is store in
@@ -102,11 +99,19 @@ image& image::grayscale_avg() {
             memset(data+i, gray, 3); // to set each of the channels to the same gray value  
         }
     }
-
     return *this;
 }
 
 image& image::grayscale_lum() {
     // same as grayscale_avg but here we take a weighted average --> preserves human perceved luminence of the image
-
+    if(channels < 3 ) {
+        printf("Image %p has less than 3 channels, it is asumed to be already grayscaled", this); 
+    }
+    else {
+        for (int i = 0; i < size; i+=channels) {
+            int gray = 0.2126*data[i] + 0.7152*data[i+1] + 0.0722*data[i+2]; // to ratio to match how the humans perceive different colors
+            memset(data+i, gray, 3); // to set each of the channels to the same gray value  
+        }
+    }
+    return *this;
 }

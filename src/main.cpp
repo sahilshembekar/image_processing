@@ -19,5 +19,9 @@ int main(int argc, char** argv) {
   gray_avg.grayscale_avg(); // then grayscale it
   gray_avg.write("gray_avg.png"); //  write that to a file
 
+  image gray_lum = test; // Make a copy of our test image
+  gray_lum.grayscale_avg(); // then grayscale it
+  gray_lum.write("gray_lum.png"); //  write that to a file
+
   return 0;
 }

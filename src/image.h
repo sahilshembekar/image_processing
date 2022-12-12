@@ -5,8 +5,7 @@ enum imageType {
    PNG, JPG, BMP, TGA 
 };
 
-struct image
- {
+struct image {
     uint8_t* data = NULL; // This is 1 byte of data
     size_t size = 0; // To keep track of everything
     int w;
